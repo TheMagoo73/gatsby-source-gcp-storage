@@ -85,7 +85,7 @@ exports.sourceNodes = async (api, pluginOptions) => {
                     children: [],
                     internal: {
                         type: name,
-                        mediaType: mime.lookup(item[0].name) || 'application/octet-stream',
+                        mediaType: "application/gcpfile",
                         contentDigest: item[0].md5Hash
                     }
                 })
