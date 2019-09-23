@@ -2,4 +2,4 @@ coverage.lcov
 node_modules
 .nyc_output
 test_results
-gatsby-node.js
+./gatsby-node.js
