@@ -2,7 +2,7 @@
 
 const {Storage} = require('@google-cloud/storage')
 const {createFileNodeFromBuffer} = require('gatsby-source-filesystem')
-
+const path = require('path')
 const mime = require('mime-types')
 const toArray = require('stream-to-array')
 
@@ -53,33 +53,41 @@ exports.sourceNodes = async (api, pluginOptions) => {
                 const item = await f.getMetadata()
                 reporter.info(`gatsby-source-gcp-storage: processing file ${item[0].name}`)
                 const id = createNodeId(item[0].mediaLink)
-        
-                createNode({
-                    bucket: item[0].bucket,
-                    fileName: item[0].name,
-                    md5hash: item[0].md5Hash,
-                    link: item[0].mediaLink,
-                    id,
-                    parent: null,
-                    children: [],
-                    internal: {
-                        type: name,
-                        mediaType: mime.lookup(item[0].name) || 'application/octet-stream',
-                        contentDigest: item[0].md5Hash
-                    }
-                })
+
+                const parsedName = path.parse(item[0].name)
+
+                reporter.info(`Boom... got ${parsedName.base}`)
 
                 // Down load a buffer of the file, and use gatsby-source-filesystem to create a File node for it
                 let parts = await toArray(f.createReadStream())
                 let buffers = parts.map(p => (p instanceof Buffer) ? p : new Buffer(p))
                 let buffer = Buffer.concat(buffers)
 
-                createFileNodeFromBuffer({
+                const fileNode = await createFileNodeFromBuffer({
+                    name: parsedName.name,
                     buffer: buffer,
                     cache: cache,
                     store: store,
                     createNode: createNode,
-                    createNodeId: createNodeId
+                    createNodeId: createNodeId,
+                    parentNodeId: id,
+                    ext: parsedName.ext
+                })
+ 
+                createNode({
+                    bucket: item[0].bucket,
+                    name: parsedName.base,
+                    md5hash: item[0].md5Hash,
+                    link: item[0].mediaLink,
+                    id,
+                    parent: null,
+                    localFile___NODE: fileNode.id,
+                    children: [],
+                    internal: {
+                        type: name,
+                        mediaType: mime.lookup(item[0].name) || 'application/octet-stream',
+                        contentDigest: item[0].md5Hash
+                    }
                 })
 
                 return Promise.resolve()
