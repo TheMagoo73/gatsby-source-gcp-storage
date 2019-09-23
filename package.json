@@ -11,6 +11,10 @@
     "build": "babel src --out-dir . --ignore ./test/*.spec.lcov",
     "prepare": "cross-env NODE_ENV=production npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheMagoo73/gatsby-source-gcp-storage.git"
+  },
   "author": "John Clarke <john.clarke73@yahoo.co.uk>",
   "license": "MIT",
   "keywords": [
