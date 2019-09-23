@@ -4,6 +4,8 @@ const {
   Storage
 } = require('@google-cloud/storage');
 
+const mime = require('mime-types');
+
 exports.sourceNodes = async (api, pluginOptions) => {
   const {
     createNodeId,
@@ -71,10 +73,10 @@ exports.sourceNodes = async (api, pluginOptions) => {
           children: [],
           internal: {
             type: name,
-            mediaType: "application/text",
+            mediaType: mime.lookup(item[0].name) || 'application/octet-stream',
             contentDigest: item[0].md5Hash
           }
-        });
+        }); // Down load a buffer of the file, and use gatsby-source-filesystem to create a File node for it
       }));
     });
     await Promise.all(fileList);

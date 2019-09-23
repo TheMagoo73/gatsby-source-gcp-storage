@@ -38,6 +38,7 @@
   "dependencies": {
     "@google-cloud/storage": "^3.3.0",
     "gatsby-node-helpers": "^0.3.0",
-    "gatsby-source-filesystem": "^2.1.26"
+    "gatsby-source-filesystem": "^2.1.26",
+    "mime-types": "^2.1.24"
   }
 }
