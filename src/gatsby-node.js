@@ -1,10 +1,13 @@
 "use strict"
 
 const {Storage} = require('@google-cloud/storage')
+const {createFileNodeFromBuffer} = require('gatsby-source-filesystem')
+
 const mime = require('mime-types')
+const toArray = require('stream-to-array')
 
 exports.sourceNodes = async (api, pluginOptions) => {
-    const {createNodeId, reporter} = api
+    const {createNodeId, reporter, store, cache} = api
     const {createNode} = api.actions
     const {gcpTokenFile, gcpBucketName, storageDirectory} = pluginOptions
 
@@ -46,29 +49,43 @@ exports.sourceNodes = async (api, pluginOptions) => {
         let fileList = []
 
         files[0].forEach(f => {
-            fileList.push(f.getMetadata().then(
-                item => {
-                    reporter.info(`gatsby-source-gcp-storage: processing file ${item[0].name}`)
-                    const id = createNodeId(item[0].mediaLink)
-            
-                    createNode({
-                        bucket: item[0].bucket,
-                        fileName: item[0].name,
-                        md5hash: item[0].md5Hash,
-                        link: item[0].mediaLink,
-                        id,
-                        parent: null,
-                        children: [],
-                        internal: {
-                            type: name,
-                            mediaType: mime.lookup(item[0].name) || 'application/octet-stream',
-                            contentDigest: item[0].md5Hash
-                        }
-                    })
+            let r = async() => {
+                const item = await f.getMetadata()
+                reporter.info(`gatsby-source-gcp-storage: processing file ${item[0].name}`)
+                const id = createNodeId(item[0].mediaLink)
+        
+                createNode({
+                    bucket: item[0].bucket,
+                    fileName: item[0].name,
+                    md5hash: item[0].md5Hash,
+                    link: item[0].mediaLink,
+                    id,
+                    parent: null,
+                    children: [],
+                    internal: {
+                        type: name,
+                        mediaType: mime.lookup(item[0].name) || 'application/octet-stream',
+                        contentDigest: item[0].md5Hash
+                    }
+                })
 
-                    // Down load a buffer of the file, and use gatsby-source-filesystem to create a File node for it
-                }
-            ))
+                // Down load a buffer of the file, and use gatsby-source-filesystem to create a File node for it
+                let parts = await toArray(f.createReadStream())
+                let buffers = parts.map(p => (p instanceof Buffer) ? p : new Buffer(p))
+                let buffer = Buffer.concat(buffers)
+
+                createFileNodeFromBuffer({
+                    buffer: buffer,
+                    cache: cache,
+                    store: store,
+                    createNode: createNode,
+                    createNodeId: createNodeId
+                })
+
+                return Promise.resolve()
+            }
+
+            fileList.push(r())
         })
 
         await Promise.all(fileList)
