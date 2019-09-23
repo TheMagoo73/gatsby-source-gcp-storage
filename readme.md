@@ -1,6 +1,11 @@
 # gatsby-source-gcp-storage
 A Gatsby source plugin for sourcing data into your Gatsby application from file in a GCP Storage bucket.
 
+[![](https://img.shields.io/npm/v/gatsby-source-gcp-storage.svg)](https://www.npmjs.com/package/gatsby-source-gcp-storage)
+[![](https://img.shields.io/npm/dm/gatsby-source-gcp-storage.svg)](https://www.npmjs.com/package/gatsby-source-gcp-storage)
+[![CircleCI](https://circleci.com/gh/TheMagoo73/gatsby-source-gcp-storage/tree/master.svg?style=svg)](https://circleci.com/gh/TheMagoo73/gatsby-source-gcp-storage/tree/master)
+[![codecov](https://codecov.io/gh/TheMagoo73/gatsby-source-gcp-storage/branch/master/graph/badge.svg)](https://codecov.io/gh/TheMagoo73/gatsby-source-gcp-storage)
+
 The plugin creates `GCPFile` nodes from files in GCP Storage. It then uses the `gatsby-source-filesystem` to download a local copy of the files from GCP, and generate `File` nodes. The various "transformer" plugins can transform the File nodes into various other types of data e.g. `gatsby-transformer-json` transforms JSON files into JSON data nodes and `gatsby-transform-remark` transforms markdown files into `MarkdownRemark` nodes from which you can query and HTML representation of the markdown.
 
 ## Warnings!
