@@ -26,6 +26,8 @@ exports.sourceNodes = async (api, pluginOptions) => {
         A GCP JSON token file is required to authenticate with the GCP storage API
         
         `)
+
+        return
     }
 
     if(!gcpBucketName) {
@@ -36,6 +38,8 @@ exports.sourceNodes = async (api, pluginOptions) => {
         The GCP storage bucket name is required
         
         `)
+
+        return
     }
 
     const storage = new Storage({keyFilename: gcpTokenFile})
