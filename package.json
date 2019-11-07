@@ -1,8 +1,8 @@
 {
   "name": "gatsby-source-gcp-storage",
-  "version": "1.0.1",
+  "version": "1.0.6",
   "description": "Gatsby source for reading files from GCP storage buckets",
-  "main": "index.js",
+  "main": "gatsby-node.js",
   "scripts": {
     "test": "nyc mocha",
     "test-report": "nyc mocha test --reporter mocha-junit-reporter --reporter-options mochaFile=./test_results/junit/results.xml",

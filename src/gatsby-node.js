@@ -42,10 +42,22 @@ exports.sourceNodes = async (api, pluginOptions) => {
         return
     }
 
-    const storage = new Storage({keyFilename: gcpTokenFile})
-    const gcpBucket = storage.bucket(gcpBucketName)
+    let files
 
-    let files = await gcpBucket.getFiles({directory: storageDirectory || `/`})
+    try{
+        const storage = new Storage({keyFilename: gcpTokenFile})
+        const gcpBucket = storage.bucket(gcpBucketName)
+
+        files = await gcpBucket.getFiles({directory: storageDirectory || `/`})
+    } catch(err) {
+        reporter.panic(`
+        
+        gatsby-source-gcp-storage: unable to access storage.
+
+        The GCP storage bucket/folder could not be accessed. Ensure that the bucker and path properties are correct, and the supplied SA account token has access
+
+        `)
+    }
 
     if(files[0].length < 1) {
         reporter.warn(`gatsby-source-gcp-storage: no files to process in ${gcpBucketName}/${storageDirectory}`)
